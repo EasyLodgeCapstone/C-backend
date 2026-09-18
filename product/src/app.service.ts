@@ -4,20 +4,19 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { MongoRepository } from 'typeorm';
+import { CreateProductDto } from './dto/create-product.dto';
 import { ObjectId } from 'mongodb';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Injectable()
-export class ProductsService {
+export class AppService {
   constructor(
     @InjectRepository(Product)
     private product: MongoRepository<Product>,
   ) {}
-
   async create(productData: CreateProductDto) {
     const isProductExist = await this.product.find({
       where: { productName: productData.productName },

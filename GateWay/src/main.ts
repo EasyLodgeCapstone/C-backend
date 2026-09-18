@@ -18,12 +18,7 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     credentials: true,
   });
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      transform: true, // <-- required for @Transform() to run
-    }),
-  );
+
   await app.listen(process.env.PORT ?? 8080);
 }
 bootstrap();

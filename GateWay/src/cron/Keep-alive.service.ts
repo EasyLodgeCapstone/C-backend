@@ -1,8 +1,6 @@
 // cron/keep-alive.service.ts
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
 
 @Injectable()
 export class KeepAliveService {
@@ -11,7 +9,7 @@ export class KeepAliveService {
   private successCount = 0;
   private failCount = 0;
 
-  constructor(@InjectDataSource() private dataSource: DataSource) {}
+  constructor() {}
 
   @Cron('*/2 * * * *') // Every 2 minutes
   async keepAlive() {
@@ -19,28 +17,10 @@ export class KeepAliveService {
     const startTime = Date.now();
 
     try {
-      // 1. Check database connection
-      const isConnected = this.dataSource.isInitialized;
-
-      if (isConnected) {
-        this.logger.log(`🔄 Database status:  Connected`);
-      } else {
-        this.logger.warn(`🔄 Database status: ❌ Disconnected`);
-        // Try to reconnect if disconnected
-        try {
-          await this.dataSource.initialize();
-          this.logger.log(' Database reconnected successfully');
-        } catch (reconnectError) {
-          this.logger.error(
-            `❌ Failed to reconnect: ${reconnectError instanceof Error ? reconnectError.message : String(reconnectError)}`,
-          );
-        }
-      }
-
-      // 2. Ping your own health endpoint
+      // 1. Ping your own health endpoint
       await this.pingHealthEndpoint();
 
-      // 3. Ping frontend to keep it alive (optional but recommended)
+      // 2. Ping frontend to keep it alive (optional but recommended)
       await this.pingFrontend();
 
       const duration = Date.now() - startTime;
@@ -88,7 +68,7 @@ export class KeepAliveService {
 
       if (response.ok) {
         this.logger.log(
-          ` Health check: ${response.status} - ${response.statusText}`,
+          `✅ Health check: ${response.status} - ${response.statusText}`,
         );
       } else {
         this.logger.warn(
@@ -126,7 +106,7 @@ export class KeepAliveService {
       clearTimeout(timeoutId);
 
       if (response.ok) {
-        this.logger.log(` Frontend ping: ${response.status}`);
+        this.logger.log(`✅ Frontend ping: ${response.status}`);
       } else {
         this.logger.warn(`⚠️ Frontend ping: ${response.status}`);
       }

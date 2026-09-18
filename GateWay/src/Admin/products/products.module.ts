@@ -1,12 +1,28 @@
 import { Module } from '@nestjs/common';
-import { ProductsService } from './products.service';
 import { ProductsController } from './products.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Product } from './entities/product.entity';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Product])],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    ClientsModule.registerAsync([
+      {
+        name: 'PRODUCT_SERVICE',
+        inject: [ConfigService],
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [configService.get<string>('CLOUDAMQP_URL')!],
+            queue: 'products_queue',
+            queueOptions: {
+              durable: true,
+            },
+          },
+        }),
+      },
+    ]),
+  ],
   controllers: [ProductsController],
-  providers: [ProductsService],
 })
 export class ProductsModule {}

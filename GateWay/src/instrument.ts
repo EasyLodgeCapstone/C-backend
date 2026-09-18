@@ -1,6 +1,6 @@
 // Import with `const Sentry = require("@sentry/nestjs");` if you are using CJS
-import * as Sentry from '@sentry/nestjs';
-import { nodeProfilingIntegration } from '@sentry/profiling-node';
+import * as Sentry from 'node_modules/@sentry/nestjs/build/types';
+import { nodeProfilingIntegration } from 'node_modules/@sentry/profiling-node/build/types';
 
 Sentry.init({
   dsn: 'https://248e1dd10f17082f65376333eac2d944@o4510988121407488.ingest.us.sentry.io/4512069097881600',

@@ -71,6 +71,7 @@ export class CreateProductDto {
   //  1. Thumbnail image URL (required)
   @IsString()
   @IsNotEmpty()
+  @IsOptional()
   thumbnailImage!: string;
 
   //  2. Gallery image URLs (array, optional)

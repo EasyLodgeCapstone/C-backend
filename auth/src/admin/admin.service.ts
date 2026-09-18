@@ -13,7 +13,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ObjectId } from 'mongodb';
 
 @Injectable()
-export class AdminAuthService {
+export class AdminService {
   constructor(
     @InjectRepository(User)
     private user: MongoRepository<User>,

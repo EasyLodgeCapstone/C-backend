@@ -4,36 +4,38 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Post,
   Req,
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
-import { AdminAuthService } from './admin-auth.service';
 import { signupDto } from './Dto/signupDto';
 import { signinDto } from './Dto/signinDto';
 import { AuthGuard } from 'src/Admin/auth/auth.guard';
+import { ClientProxy } from '@nestjs/microservices';
 
 @Controller('admin-auth')
 export class AdminAuthController {
-  constructor(private readonly adminAuthService: AdminAuthService) {}
+  constructor(
+    @Inject('ADMIN_AUTH_SERVICE') private adminService: ClientProxy,
+  ) {}
   @HttpCode(HttpStatus.OK)
   @Post('signup')
   signup(@Body(new ValidationPipe()) signupDto: signupDto) {
-    console.log(signupDto);
-    return this.adminAuthService.signup(signupDto);
+    return this.adminService.send({ cmd: 'sign_up' }, signupDto);
   }
 
   @HttpCode(HttpStatus.OK)
   @Post('signin')
   signin(@Body(new ValidationPipe()) signinDto: signinDto) {
-    return this.adminAuthService.signin(signinDto);
+    return this.adminService.send({ cmd: 'sign_in' }, signinDto);
   }
 
   @UseGuards(AuthGuard)
   @Get('verify')
   verify(@Req() req: Request & { user: { sub: string } }) {
     const userId = req.user.sub;
-    return this.adminAuthService.verify(userId);
+    return this.adminService.send({ cmd: 'verify' }, userId);
   }
 }

@@ -1,24 +1,28 @@
 import { Module } from '@nestjs/common';
-import { AdminAuthService } from './admin-auth.service';
 import { AdminAuthController } from './admin-auth.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
-import { JwtModule } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
-    JwtModule.registerAsync({
-      global: true,
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('jwt.adminSecret'),
-        signOptions: { expiresIn: '1d' },
-      }),
-    }),
+    ConfigModule.forRoot({ isGlobal: true }),
+    ClientsModule.registerAsync([
+      {
+        name: 'ADMIN_AUTH_SERVICE',
+        inject: [ConfigService],
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [configService.get<string>('CLOUDAMQP_URL')!],
+            queue: 'admin_auth_queue',
+            queueOptions: {
+              durable: true,
+            },
+          },
+        }),
+      },
+    ]),
   ],
   controllers: [AdminAuthController],
-  providers: [AdminAuthService],
 })
 export class AdminAuthModule {}
