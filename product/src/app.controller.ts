@@ -5,6 +5,7 @@ import {
   MessagePattern,
   Payload,
   RmqContext,
+  Transport,
 } from '@nestjs/microservices';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';

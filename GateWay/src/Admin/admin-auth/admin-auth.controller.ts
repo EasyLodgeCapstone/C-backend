@@ -23,19 +23,19 @@ export class AdminAuthController {
   @HttpCode(HttpStatus.OK)
   @Post('signup')
   signup(@Body(new ValidationPipe()) signupDto: signupDto) {
-    return this.adminService.send({ cmd: 'sign_up' }, signupDto);
+    return this.adminService.send({ cmd: 'admin_sign_up' }, signupDto);
   }
 
   @HttpCode(HttpStatus.OK)
   @Post('signin')
   signin(@Body(new ValidationPipe()) signinDto: signinDto) {
-    return this.adminService.send({ cmd: 'sign_in' }, signinDto);
+    return this.adminService.send({ cmd: 'admin_sign_in' }, signinDto);
   }
 
   @UseGuards(AuthGuard)
   @Get('verify')
   verify(@Req() req: Request & { user: { sub: string } }) {
     const userId = req.user.sub;
-    return this.adminService.send({ cmd: 'verify' }, userId);
+    return this.adminService.send({ cmd: 'admin_verify' }, userId);
   }
 }

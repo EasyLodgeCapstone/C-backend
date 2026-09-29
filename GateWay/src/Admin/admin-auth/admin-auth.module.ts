@@ -2,10 +2,19 @@ import { Module } from '@nestjs/common';
 import { AdminAuthController } from './admin-auth.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    JwtModule.registerAsync({
+      global: true,
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('jwt.ADMIN_JWT_SECRET'),
+        signOptions: { expiresIn: '1d' },
+      }),
+    }),
     ClientsModule.registerAsync([
       {
         name: 'ADMIN_AUTH_SERVICE',

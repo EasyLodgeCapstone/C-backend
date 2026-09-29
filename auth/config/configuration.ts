@@ -8,5 +8,6 @@ export default () => ({
   },
   jwt: {
     jwtCode: process.env.JWT_SECRET,
+    clientJwt: process.env.CLIENT_JWT_SECRET,
   },
 });

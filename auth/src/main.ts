@@ -28,6 +28,20 @@ async function bootstrap() {
     },
   });
 
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.RMQ,
+    options: {
+      urls: [amqpUrl],
+      queue: 'client_auth_queue',
+      queueOptions: {
+        durable: true, // queue survives broker restart
+      },
+      noAck: false, // require acknowledgment
+      prefetchCount: 1, // process 1 message at a time
+      isGlobalPrefetchCount: false,
+    },
+  });
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -41,6 +55,6 @@ async function bootstrap() {
   await app.listen(process.env.PORT || 3002, '0.0.0.0');
 
   console.log(`🚀 HTTP on ${process.env.PORT || 3002}`);
-  console.log(`🐰 RabbitMQ microservice ready on queue: admin_auth_queue`);
+  console.log(`🐰 RabbitMQ microservice ready on queue: auth_queue`);
 }
 bootstrap();

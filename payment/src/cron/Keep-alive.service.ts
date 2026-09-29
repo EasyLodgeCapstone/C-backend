@@ -65,7 +65,7 @@ export class KeepAliveService {
     const backendUrl =
       process.env.BACKEND_URL ||
       process.env.RENDER_EXTERNAL_URL ||
-      'http://localhost:3000';
+      'http://localhost:3002';
 
     if (!backendUrl) {
       this.logger.warn('⚠️ No BACKEND_URL found, skipping health check');

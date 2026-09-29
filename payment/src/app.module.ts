@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from 'config/configuration';
 import { ScheduleModule } from '@nestjs/schedule';
+import { AccountModule } from './account/account.module';
 
 @Module({
   imports: [
@@ -32,6 +33,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     }),
 
     CronModule,
+
+    AccountModule,
   ],
   controllers: [HealthController],
 })

@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from 'config/configuration';
 import { HealthController } from './health/health.controller';
 import { AdminModule } from './admin/admin.module';
+import { ClientModule } from './client/client.module';
 
 @Module({
   imports: [
@@ -35,6 +36,8 @@ import { AdminModule } from './admin/admin.module';
     CronModule,
 
     AdminModule,
+
+    ClientModule,
   ],
   controllers: [HealthController],
 })

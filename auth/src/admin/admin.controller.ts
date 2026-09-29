@@ -13,7 +13,7 @@ import { signinDto } from './Dto/signinDto';
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
-  @MessagePattern({ cmd: 'sign_up' })
+  @MessagePattern({ cmd: 'admin_sign_up' })
   async signup(@Payload() signupDto: signupDto, @Ctx() context: RmqContext) {
     const channel = context.getChannelRef();
     const msg = context.getMessage();
@@ -58,7 +58,7 @@ export class AdminController {
     }
   }
 
-  @MessagePattern({ cmd: 'sign_in' })
+  @MessagePattern({ cmd: 'admin_sign_in' })
   async signIn(@Payload() signinDto: signinDto, @Ctx() context: RmqContext) {
     const channel = context.getChannelRef();
     const msg = context.getMessage();
@@ -93,7 +93,7 @@ export class AdminController {
     }
   }
 
-  @MessagePattern({ cmd: 'verify' })
+  @MessagePattern({ cmd: 'admin_verify' })
   async verify(@Payload() userId: string, @Ctx() context: RmqContext) {
     const channel = context.getChannelRef();
     const msg = context.getMessage();

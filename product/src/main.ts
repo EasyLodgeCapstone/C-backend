@@ -25,7 +25,7 @@ async function bootstrap() {
         durable: true, // queue survives broker restart
       },
       noAck: false, // require acknowledgment
-      prefetchCount: 5, // process 5 message at a time
+      prefetchCount: 1, // process 5 message at a time
       isGlobalPrefetchCount: false,
     },
   });
