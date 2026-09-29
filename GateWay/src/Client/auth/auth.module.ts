@@ -1,24 +1,37 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { clientUser } from './entities/auth.entity';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import { JwtModule } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([clientUser]),
+    ConfigModule.forRoot({ isGlobal: true }),
     JwtModule.registerAsync({
       global: true,
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('jwt.clientSecret'),
+        secret: configService.get<string>('jwt.CLIENT_JWT_SECRET'),
         signOptions: { expiresIn: '1d' },
       }),
     }),
+    ClientsModule.registerAsync([
+      {
+        name: 'CLIENT_AUTH_SERVICE',
+        inject: [ConfigService],
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [configService.get<string>('CLOUDAMQP_URL')!],
+            queue: 'client_auth_queue',
+            queueOptions: {
+              durable: true,
+            },
+          },
+        }),
+      },
+    ]),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
 })
 export class AuthModule {}

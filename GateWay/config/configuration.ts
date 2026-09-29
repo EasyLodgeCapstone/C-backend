@@ -1,15 +1,12 @@
 export default () => ({
-  port: parseInt(process.env.PORT || '8080', 10),
-  database: {
-    host: process.env.MONGO_URI,
-  },
+  port: parseInt(process.env.PORT || '3000', 10),
+  CLOUDAMQP_URL: process.env.CLOUDAMQP_URL,
   jwt: {
-    adminSecret: process.env.ADMIN_JWT_SECRET,
-    clientSecret: process.env.CLIENT_JWT_SECRET,
-  },
-  cloudinary: {
-    cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME,
-    cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
-    cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET,
+    ADMIN_JWT_SECRET: process.env.ADMIN_JWT_SECRET,
+    CLIENT_JWT_SECRET: process.env.CLIENT_JWT_SECRET,
   },
 });
+
+export const jwtConstants = {
+  secret: process.env.CLIENT_JWT_SECRET,
+};

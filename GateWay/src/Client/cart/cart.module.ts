@@ -1,12 +1,37 @@
 import { Module } from '@nestjs/common';
-import { CartService } from './cart.service';
 import { CartController } from './cart.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Cart } from './entities/cart.entity';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Cart])],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    JwtModule.registerAsync({
+      global: true,
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('jwt.CLIENT_JWT_SECRET'),
+        signOptions: { expiresIn: '1d' },
+      }),
+    }),
+    ClientsModule.registerAsync([
+      {
+        name: 'CART_SERVICE',
+        inject: [ConfigService],
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [configService.get<string>('CLOUDAMQP_URL')!],
+            queue: 'cart_queue',
+            queueOptions: {
+              durable: true,
+            },
+          },
+        }),
+      },
+    ]),
+  ],
   controllers: [CartController],
-  providers: [CartService],
 })
 export class CartModule {}

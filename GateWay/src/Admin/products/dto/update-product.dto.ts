@@ -1,4 +1,3 @@
-import { PartialType } from '@nestjs/mapped-types';
 import { CreateProductDto } from './create-product.dto';
 import {
   IsBoolean,
@@ -8,6 +7,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
+import { PartialType } from '@nestjs/mapped-types';
 
 export class UpdateProductDto extends PartialType(CreateProductDto) {
   @IsString()

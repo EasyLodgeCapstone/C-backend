@@ -1,13 +1,27 @@
 import { Module } from '@nestjs/common';
-import { DashboardService } from './dashboard.service';
 import { DashboardController } from './dashboard.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Product } from 'src/Admin/products/entities/product.entity';
-import { Account } from 'src/Admin/account/entities/account.entity';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Product, Account])],
+  imports: [
+    ClientsModule.registerAsync([
+      {
+        name: 'DASHBOARD_SERVICE',
+        inject: [ConfigService],
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [configService.get<string>('CLOUDAMQP_URL')!],
+            queue: 'dashboard_queue',
+            queueOptions: {
+              durable: true,
+            },
+          },
+        }),
+      },
+    ]),
+  ],
   controllers: [DashboardController],
-  providers: [DashboardService],
 })
 export class DashboardModule {}

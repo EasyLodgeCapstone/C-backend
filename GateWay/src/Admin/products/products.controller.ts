@@ -6,51 +6,52 @@ import {
   Patch,
   Delete,
   Query,
+  Inject,
   ValidationPipe,
 } from '@nestjs/common';
-import { ProductsService } from './products.service';
+import { ClientProxy } from '@nestjs/microservices';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(@Inject('PRODUCT_SERVICE') private productClient: ClientProxy) {}
 
   @Post('productCreate')
-  async create(
-    @Body(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true, // Strips properties not in DTO
-        forbidNonWhitelisted: true, // Throws error if extra properties
-      }),
-    )
+  create(
+    @Body(new ValidationPipe())
     createProductDto: CreateProductDto,
   ) {
-    const productData = {
-      ...createProductDto,
-    };
-
-    return this.productsService.create(productData);
+    return this.productClient.send({ cmd: 'create_product' }, createProductDto);
   }
 
   @Get('getProducts')
   findAll(@Query('page') page: number, @Query('limit') limit: number) {
-    return this.productsService.findAll(page, limit);
+    const pag = {
+      page: Number(page) || 1,
+      limit: Number(limit) || 10,
+    };
+    console.log(pag);
+
+    return this.productClient.send({ cmd: 'get_products' }, pag);
   }
 
   @Get('getSingleProduct')
   findOne(@Query('id') id: string) {
-    return this.productsService.findOne(id);
+    return this.productClient.send({ cmd: 'get_single_product' }, id);
   }
 
   @Patch('updateProduct')
   update(@Query('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productsService.update(id, updateProductDto);
+    const update = {
+      id,
+      updateProductDto,
+    };
+    return this.productClient.send({ cmd: 'update_product' }, update);
   }
 
   @Delete('deleteProduct')
   remove(@Query('id') id: string) {
-    return this.productsService.remove(id);
+    return this.productClient.send({ cmd: 'delete_product' }, id);
   }
 }
