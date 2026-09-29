@@ -14,14 +14,14 @@ RUN npm install
 COPY . .
 
 # Build the NestJS application
-# RUN npm run build
+RUN npm run build
 
 # DEBUG: Check what was built
-# RUN ls -la /usr/src/app/dist/ || echo "dist folder not found!"
+RUN ls -la /usr/src/app/dist/ || echo "dist folder not found!"
 
 # Expose the application port
 EXPOSE 3002
 
 # Command to run the application
-# CMD ["node", "dist/src/main.js"]
-CMD ["npm", "run", "start:dev"]
+CMD ["node", "dist/src/main.js"]
+# CMD ["npm", "run", "start:dev"]
