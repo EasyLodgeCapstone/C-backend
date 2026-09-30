@@ -14,7 +14,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:8080',
-      'https://c-frontend-c604.onrender.com',
+      'https://bb-bodycareandspa.onrender.com',
       'https://c-backend-rz9j.onrender.com',
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
