@@ -15,7 +15,7 @@ async function bootstrap() {
     origin: [
       'http://localhost:8080',
       'https://bb-bodycareandspa.onrender.com',
-      'https://c-backend-rz9j.onrender.com',
+      'https://c-backend-7099.onrender.com',
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     credentials: true,
