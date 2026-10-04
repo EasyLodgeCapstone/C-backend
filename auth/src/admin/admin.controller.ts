@@ -59,11 +59,20 @@ export class AdminController {
   }
 
   @MessagePattern({ cmd: 'admin_sign_in' })
-  async signIn(@Payload() signinDto: signinDto, @Ctx() context: RmqContext) {
+  async signIn(
+    @Payload() signinDto: signinDto,
+    ipAddress,
+    userAgent,
+    @Ctx() context: RmqContext,
+  ) {
     const channel = context.getChannelRef();
     const msg = context.getMessage();
     try {
-      const result = await this.adminService.signin(signinDto);
+      const result = await this.adminService.signin(
+        signinDto,
+        ipAddress,
+        userAgent,
+      );
 
       channel.ack(msg);
 

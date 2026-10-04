@@ -11,12 +11,15 @@ import * as bcrypt from 'bcrypt';
 import { signinDto } from './Dto/signinDto';
 import { JwtService } from '@nestjs/jwt';
 import { ObjectId } from 'mongodb';
+import { AdminAuthAudit } from './entities/auth-audit.entity';
 
 @Injectable()
 export class AdminService {
   constructor(
     @InjectRepository(User)
     private user: MongoRepository<User>,
+    @InjectRepository(AdminAuthAudit)
+    private AuthAudit: MongoRepository<AdminAuthAudit>,
     private jwtService: JwtService,
   ) {}
 
@@ -58,7 +61,7 @@ export class AdminService {
     };
   }
 
-  async signin(signinDto: signinDto) {
+  async signin(signinDto: signinDto, ipAddress: string, userAgent: string) {
     const isExist = await this.user.findOne({
       where: {
         $or: [{ name: signinDto.userCre }, { email: signinDto.userCre }],
@@ -66,6 +69,13 @@ export class AdminService {
     });
 
     if (!isExist) {
+      await this.AuthAudit.save({
+        attemptedIdentifier: signinDto.userCre,
+        action: 'LOGIN FAILED',
+        reason: 'INVALID_CREDENTIALS',
+        ipAddress: ipAddress,
+        userAgent: userAgent,
+      });
       throw new UnauthorizedException('Invalid credentials');
     }
 

@@ -28,8 +28,18 @@ export class AdminAuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('signin')
-  signin(@Body(new ValidationPipe()) signinDto: signinDto) {
-    return this.adminService.send({ cmd: 'admin_sign_in' }, signinDto);
+  signin(
+    @Body(new ValidationPipe()) signinDto: signinDto,
+    @Req() req: Request,
+  ) {
+    return this.adminService.send(
+      { cmd: 'admin_sign_in' },
+      {
+        ...signinDto,
+        ipAddress: (req as Request & { ip?: string }).ip,
+        userAgent: req.headers['user-agent'] as string | undefined,
+      },
+    );
   }
 
   @UseGuards(AuthGuard)
