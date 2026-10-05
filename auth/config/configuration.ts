@@ -7,7 +7,7 @@ export default () => ({
     host: process.env.CLOUDAMQP_URL,
   },
   jwt: {
-    jwtCode: process.env.JWT_SECRET,
+    jwtCode: process.env.ADMIN_JWT_SECRET,
     clientJwt: process.env.CLIENT_JWT_SECRET,
   },
 });
